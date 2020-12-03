@@ -1,4 +1,5 @@
 #coding=utf-8
+import torch
 import glob
 import os
 import numpy as np
@@ -10,6 +11,7 @@ from tqdm import tqdm
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from models.vit_v1 import ViT
+import random
 
 
 # settings
@@ -19,6 +21,15 @@ lr = 3e-5
 gamma = 0.7 
 seed = 42
 num_workers = 4
+
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    jt.set_seed(seed)
+
+
+seed_everything(seed)
 
 # use cuda
 jt.flags.use_cuda = 1
@@ -76,9 +87,9 @@ class CatsDogsDataset(Dataset):
         return img_transformed, label
 
 
-train_data = CatsDogsDataset(train_list, transform=transform,batch_size=batch_size, shuffle=True, num_workers=num_workers)
-valid_data = CatsDogsDataset(valid_list, transform=transform,batch_size=batch_size, shuffle=True, num_workers=num_workers)
-test_data = CatsDogsDataset(test_list, transform=transform,batch_size=batch_size, shuffle=True, num_workers=num_workers)
+train_data = CatsDogsDataset(train_list, transform=transform,batch_size=batch_size, shuffle=False, num_workers=num_workers)
+valid_data = CatsDogsDataset(valid_list, transform=transform,batch_size=batch_size, shuffle=False, num_workers=num_workers)
+test_data = CatsDogsDataset(test_list, transform=transform,batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
 print(len(train_data))
 print(len(valid_data))
@@ -103,9 +114,6 @@ for epoch in range(epochs):
     epoch_loss = 0
     epoch_accuracy = 0
     for data, label in tqdm(train_data):
-        data = jt.array(data)
-        label = jt.array(label)
-
         output = model(data)
         loss = criterion(output, label)
         optimizer.step(loss)
@@ -118,9 +126,6 @@ for epoch in range(epochs):
         epoch_val_accuracy = 0
         epoch_val_loss = 0
         for data, label in tqdm(valid_data):
-            data = jt.array(data)
-            label = jt.array(label)
-
             val_output = model(data)
             val_loss = criterion(val_output, label)
 

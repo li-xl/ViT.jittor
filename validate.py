@@ -10,11 +10,12 @@ from dataset import create_val_dataset
 
 
 def validate():
+    bs=256
     # create model
     model  = create_model('vit_base_patch16_224',pretrained=True,num_classes=1000)
     criterion = nn.CrossEntropyLoss()
      
-    dataset = create_val_dataset(root='/data/imagenet',batch_size=256,num_workers=4,img_size=224)
+    dataset = create_val_dataset(root='/data/imagenet',batch_size=bs,num_workers=4,img_size=224)
 
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -23,11 +24,12 @@ def validate():
 
     model.eval()
     with jt.no_grad():
-        input = jt.random((256,3,224,224))
+        input = jt.random((bs,3,224,224))
         model(input)
 
         end=time.time()
         for batch_idx, (input, target) in enumerate(dataset):
+            # dataset.display_worker_status()
             batch_size = input.shape[0]
             # compute output
             output = model(input)
@@ -35,9 +37,9 @@ def validate():
 
             # measure accuracy and record loss
             acc1, acc5 = accuracy(output, target, topk=(1, 5))
-            losses.update(loss.item(), batch_size)
-            top1.update(acc1.item(), batch_size)
-            top5.update(acc5.item(), batch_size)
+            losses.update(loss, batch_size)
+            top1.update(acc1, batch_size)
+            top5.update(acc5, batch_size)
 
 
             # measure elapsed time
@@ -70,7 +72,6 @@ def validate():
 
 def main():
     jt.flags.use_cuda=1
-    jt.flags.merge_loop_mismatch_threshold = 1
     validate()
 
 if __name__ == '__main__':

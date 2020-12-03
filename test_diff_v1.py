@@ -10,7 +10,7 @@ import numpy as np
 from tqdm import tqdm 
 
 
-from models.vit import ViT as jt_ViT
+from models.vit_v1 import ViT as jt_ViT
 from models.vit_pytorch import ViT as torch_ViT
 
 torch_model = torch_ViT(
@@ -24,7 +24,6 @@ torch_model = torch_ViT(
 ).cuda()
 
 jt.flags.use_cuda=1
-jt.flags.merge_loop_mismatch_threshold = 1
 
 
 jt_model = jt_ViT(
@@ -51,13 +50,14 @@ image = np.random.randn(64,3,224,224).astype(np.float32)
 # hook = auto_diff.Hook('ViT')
 # hook.hook_module(jt_model)
 
-for i in tqdm(range(300)):
+iter_num=1000
+for i in tqdm(range(iter_num)):
     jt_data = jt.array(image)
     jt_output = jt_model(jt_data).numpy()
 
 # print(jt_output)
 
-for i in tqdm(range(300)):
+for i in tqdm(range(iter_num)):
     torch_data = torch.tensor(image).cuda()
     torch_output = torch_model(torch_data).cpu().detach().numpy()
 

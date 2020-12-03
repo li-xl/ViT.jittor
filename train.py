@@ -35,7 +35,7 @@ def main():
     jt.flags.use_cuda = 1
 
     model_name = 'vit_base_patch16_224'
-    lr = 0.01
+    lr = 0.001
     train_dir = '/data/imagenet/train'
     eval_dir = '/data/imagenet/val'
     batch_size = 32
@@ -106,6 +106,7 @@ def train_epoch(epoch, model, loader, optimizer, loss_fn, lr_scheduler=None):
         loss = loss_fn(output, target)
 
         losses_m.update(loss.item(), input.size(0))
+        # losses_m.update(0, input.size(0))
 
         optimizer.step(loss)
 

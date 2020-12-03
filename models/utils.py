@@ -121,6 +121,9 @@ class AverageMeter:
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+        for k, v in self.__dict__.items():
+            if isinstance(v, jt.Var):
+                v.stop_grad().sync()
 
 
 def accuracy(output, target, topk=(1,)):
