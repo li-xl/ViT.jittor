@@ -20,8 +20,8 @@ ViT ( Ross Wightman'code)
 |Framework| Test| Train|
 |---|---|---|
 |Pytorch|1.007s|0.388s|
-|Jittor| | 0.325s|
-| Speed| |1.19|
+|Jittor| 0.988s| 0.325s|
+| Speed| 1.02 |1.19|
 
 ### Usage
 #### ViT V1(lucidrains')
